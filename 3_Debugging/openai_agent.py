@@ -14,18 +14,20 @@ load_dotenv()
 
 os.environ["OPENAI_API_KEY"]=os.getenv("OPENAI_API_KEY")
 os.environ["LANGSMITH_API_KEY"]=os.getenv("Langchain_API_KEY")
-
+os.environ["GROQ_API_KEY"]=os.getenv("Groq_API_Key")
 class State(TypedDict):
     messages:Annotated[list[BaseMessage],add_messages]
 
-model=ChatOpenAI(temperature=0)
+#model=ChatOpenAI(temperature=0)
+from langchain_groq import ChatGroq
 
+groq_llm=ChatGroq(model="qwen/qwen3-32b")
 
 def make_default_graph():
     graph_workflow=StateGraph(State)
 
     def call_model(state):
-        return {"message":[model.invoke(state['messages'])]}
+        return {"message":[groq_llm.invoke(state['messages'])]}
     
     graph_workflow.add_node("agent",call_model)
 
